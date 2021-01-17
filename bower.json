@@ -1,0 +1,17 @@
+{
+  "name": "wp-bulk-process-template",
+  "description": "A WordPress custom plugin templates to perform a bulk process with Ajax without worrying about memory exceed or timeout problems.",
+  "main": "gulpfile.js",
+  "authors": [
+    "vijayhardaha <vijayhardaha@gmail.com>"
+  ],
+  "license": "ISC",
+  "homepage": "https://github.com/vijayhardaha/wp-bulk-process-template",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

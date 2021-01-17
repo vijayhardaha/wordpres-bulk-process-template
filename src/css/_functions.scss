@@ -1,0 +1,27 @@
+$browser-context: 16; // Default
+
+@function em($pixels, $context: $browser-context) {
+  @return #{$pixels/$context}em;
+}
+
+@function rem($pixels, $context: $browser-context) {
+  @return #{$pixels/$context}rem;
+}
+
+@mixin if-direct-parent($parent-selectors) {
+  $current-sequences: &;
+  $new-sequences: ();
+
+  @each $parent-selector in $parent-selectors {
+    @each $sequence in $current-sequences {
+      $current-selector: nth($sequence, -1);
+      $prepended-selector: join($parent-selector, $current-selector);
+      $new-sequence: set-nth($sequence, -1, $prepended-selector);
+      $new-sequences: append($new-sequences, $new-sequence, comma);
+    }
+  }
+
+  @at-root #{$new-sequences} {
+    @content;
+  }
+}

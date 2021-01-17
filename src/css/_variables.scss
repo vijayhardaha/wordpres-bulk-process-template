@@ -1,0 +1,22 @@
+$white: #fff;
+$black: #000;
+$orange: #ff982d;
+$green: #46b450;
+$primary: #55bbcb;
+
+$heading-color: #444;
+
+$row-border-color: #e4e4e4;
+
+$input-bg-color: #fff;
+$input-border-color: #ddd;
+$input-text-color: #333;
+$input-focus-color: #a3dae3;
+
+$desc-text-color: #777;
+$link-shadow-color: rgba(#a3dae3, 0.5);
+
+$progress-bullet-color: #a3dae3;
+$progress-text-color: darken($progress-bullet-color, 10%);
+$progress-bar-color: lighten($progress-bullet-color, 18%);
+$progress-active-color: darken($progress-bullet-color, 20%);

@@ -1,0 +1,109 @@
+# Copyright (C) 2021 WP Bulk Process 1.0.0
+# This file is distributed under the same license as the WP Bulk Process 1.0.0 package.
+msgid ""
+msgstr ""
+"Project-Id-Version: WP Bulk Process 1.0.0\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Basepath: ..\n"
+"X-Poedit-KeywordsList: __;_e;_ex:1,2c;_n:1,2;_n_noop:1,2;_nx:1,2,4c;_nx_noop:1,2,3c;_x:1,2c;esc_attr__;esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPathExcluded-0: *.js\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: ../includes/class-wp-bulk-process-admin.php:38, ../includes/class-wp-bulk-process-admin.php:38, ../includes/class-wp-bulk-process-admin.php:109
+msgid "WP Bulk Process"
+msgstr ""
+
+#: ../includes/class-wp-bulk-process-admin.php:174
+msgid "Select Action"
+msgstr ""
+
+#: ../includes/class-wp-bulk-process-admin.php:178
+msgid "In Progess"
+msgstr ""
+
+#: ../includes/class-wp-bulk-process-admin.php:182
+msgid "Done!"
+msgstr ""
+
+#: ../includes/class-wp-bulk-process-admin.php:198
+msgid "Information"
+msgstr ""
+
+#: ../includes/class-wp-bulk-process-admin.php:199
+msgid "Choose one of the action and start your process"
+msgstr ""
+
+#: ../includes/class-wp-bulk-process-admin.php:205
+msgid "Bulk Process Action"
+msgstr ""
+
+#: ../includes/class-wp-bulk-process-admin.php:209
+msgid "E.g. Regenerate all users password"
+msgstr ""
+
+#: ../includes/class-wp-bulk-process-admin.php:210
+msgid "E.g. Update any post meta in all posts"
+msgstr ""
+
+#: ../includes/class-wp-bulk-process-admin.php:212
+msgid "Choose the action which you wanna perform"
+msgstr ""
+
+#: ../includes/class-wp-bulk-process-admin.php:217
+msgid "Start Process"
+msgstr ""
+
+#: ../includes/class-wp-bulk-process-admin.php:238
+msgid "In Progress"
+msgstr ""
+
+#: ../includes/class-wp-bulk-process-admin.php:239
+msgid "Your process is in progress, Please do not close this window until process is finished."
+msgstr ""
+
+#: ../includes/class-wp-bulk-process-admin.php:277
+msgid "Complete"
+msgstr ""
+
+#. translators: %s start step url
+#: ../includes/class-wp-bulk-process-admin.php:278
+msgid "Your process has finished. Here is the summary of your last process. %s to go on start page."
+msgstr ""
+
+#: ../includes/class-wp-bulk-process-admin.php:278
+msgid "Click here"
+msgstr ""
+
+#: ../includes/class-wp-bulk-process-admin.php:287
+msgid "Success"
+msgstr ""
+
+#: ../includes/class-wp-bulk-process-admin.php:291
+msgid "Failed"
+msgstr ""
+
+#: ../includes/class-wp-bulk-process-admin.php:295
+msgid "Skipped"
+msgstr ""
+
+#. translators: %s: Minimum WordPress version
+#: ../includes/class-wp-bulk-process.php:113
+msgid "Update required: WP Bulk Process require WordPress version %s or newer to work properly. Please update to required version to have best experience."
+msgstr ""
+
+#: ../includes/class-wp-bulk-process.php:106
+msgid "Update required: WP Bulk Process require PHP version %1$s or newer (%2$s or higher recommended) to work properly. Please update to required version to have best experience."
+msgstr ""
+
+#: ../includes/class-wp-bulk-process.php:98
+msgid "Update required: WP Bulk Process require PHP version %1$s or newer (%2$s or higher recommended) and WordPress version %3$s or newer to work properly. Please update to required version to have best experience."
+msgstr ""
+
+#. translators: 1: error message 2: file name and path 3: line number
+#: ../includes/class-wp-bulk-process.php:140
+msgid "%1$s in %2$s on line %3$s"
+msgstr ""
