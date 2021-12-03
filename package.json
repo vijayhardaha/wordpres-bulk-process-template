@@ -1,47 +1,71 @@
 {
-  "name": "wp-bulk-process-template",
+  "name": "wordpress-bulk-process-template",
   "version": "1.0.0",
-  "description": "A WordPress custom plugin templates to perform a bulk process with Ajax without worrying about memory exceed or timeout problems.",
+  "description": "A WordPress plugin template to perform a bulk process with Ajax without worrying about memory exceed or timeout problems.",
   "main": "gulpfile.js",
   "scripts": {
-    "clean": "gulp clean",
-    "start": "gulp watch",
+    "preinstall": "npx npm-force-resolutions",
+    "dev": "gulp watch",
     "build": "gulp build",
     "makepot": "gulp makepot"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vijayhardaha/wp-bulk-process-template.git"
+    "url": "git+https://github.com/vijayhardaha/wordpres-bulk-process-template.git"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "wordpress",
+    "wordpress-plugin",
+    "wordpress-site",
+    "wordpress-ajax",
+    "wordpress-development-kit",
+    "wp-ajax-handler",
+    "wp-ajax",
+    "wp-ajax-boilerplate",
+    "wp-async",
+    "wp-ajax-async"
+  ],
+  "author": "Vijay Hardaha <https://twitter.com/vijayhardaha>",
+  "license": "MIT",
   "bugs": {
-    "url": "https://github.com/vijayhardaha/wp-bulk-process-template/issues"
+    "url": "https://github.com/vijayhardaha/wordpres-bulk-process-template/issues"
   },
-  "homepage": "https://github.com/vijayhardaha/wp-bulk-process-template#readme",
+  "homepage": "https://github.com/vijayhardaha/wordpres-bulk-process-template#readme",
   "devDependencies": {
     "asset-builder": "^2.0.0",
-    "autoprefixer": "^10.2.1",
+    "autoprefixer": "^10.4.0",
     "del": "^6.0.0",
     "gulp": "^4.0.2",
     "gulp-clean-css": "^4.3.0",
     "gulp-concat": "^2.6.1",
     "gulp-cssbeautify": "^3.0.0",
-    "gulp-flatten": "^0.4.0",
-    "gulp-imagemin": "^7.1.0",
+    "gulp-group-css-media-queries": "^1.2.2",
     "gulp-jshint": "^2.1.0",
     "gulp-plumber": "^1.2.1",
-    "gulp-postcss": "^9.0.0",
+    "gulp-postcss": "^9.0.1",
     "gulp-rename": "^2.0.0",
-    "gulp-sass": "^4.1.0",
-    "gulp-terser": "^2.0.1",
-    "jshint": "^2.12.0",
+    "gulp-sass": "^5.0.0",
+    "gulp-strip-css-comments": "^2.0.0",
+    "gulp-terser": "^2.1.0",
+    "jshint": "^2.13.1",
     "lazypipe": "^1.0.2",
     "merge-stream": "^2.0.0",
-    "node-sass": "^5.0.0",
-    "postcss": "^8.2.4",
-    "postcss-discard-duplicates": "^4.0.2",
-    "wp-pot": "^1.9.8"
+    "ora": "^5.4.1",
+    "postcss": "^8.4.3",
+    "postcss-discard-duplicates": "^5.0.1",
+    "prompts": "^2.4.2",
+    "replace-in-file": "^6.3.2",
+    "rimraf": "^3.0.2",
+    "sass": "^1.43.5",
+    "wp-pot": "^1.9.9"
+  },
+  "resolutions": {
+    "ansi-regex": "^=5.0.1",
+    "glob-parent": "^=5.1.2",
+    "json-schema": "^0.4.0",
+    "nth-check": "^=2.0.1",
+    "object-path": "^0.11.8",
+    "semver-regex": "^3.1.3",
+    "trim-newlines": "^=3.0.1"
   }
 }
