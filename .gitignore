@@ -37,5 +37,5 @@ jspm_packages
 # Optional REPL history
 .node_repl_history
 
-# Package lock json
-package-lock.json
+# MacOs
+.DS_Store
