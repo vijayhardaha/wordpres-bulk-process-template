@@ -16,12 +16,20 @@ defined( 'ABSPATH' ) || exit;
  */
 final class WP_Bulk_Process {
 	/**
-	 * The single instance of the class.
+	 * This class instance.
 	 *
-	 * @var WP_Bulk_Process
+	 * @var WP_Bulk_Process single instance of this class.
 	 * @since 1.0.0
 	 */
-	protected static $instance = null;
+	private static $instance;
+
+	/**
+	 * Admin notices to add.
+	 *
+	 * @var array Array of admin notices.
+	 * @since 1.0.0
+	 */
+	private $notices = array();
 
 	/**
 	 * Main WP_Bulk_Process Instance.
@@ -40,91 +48,42 @@ final class WP_Bulk_Process {
 
 	/**
 	 * WP_Bulk_Process Constructor.
+	 *
+	 * @since 1.0.0
 	 */
 	public function __construct() {
 		$this->define_constants();
-		$this->includes();
-		$this->init_hooks();
-	}
 
-	/**
-	 * When WP has loaded all plugins, trigger the `wp_bulk_process_loaded` hook.
-	 *
-	 * This ensures `wp_bulk_process_loaded` is called only after all other plugins
-	 * are loaded.
-	 *
-	 * @since 1.0.0
-	 */
-	public function on_plugins_loaded() {
-		do_action( 'wp_bulk_process_loaded' );
-	}
-
-	/**
-	 * Hook into actions and filters.
-	 *
-	 * @since 1.0.0
-	 */
-	private function init_hooks() {
-		register_activation_hook( WP_BULK_PROCESS_PLUGIN_FILE, array( $this, 'install' ) );
+		register_activation_hook( WP_BULK_PROCESS_PLUGIN_FILE, array( $this, 'activation_check' ) );
 
 		register_shutdown_function( array( $this, 'log_errors' ) );
 
-		add_action( 'admin_notices', array( $this, 'build_dependencies_notice' ) );
-		add_action( 'activated_plugin', array( $this, 'activated_plugin' ) );
-		add_action( 'deactivated_plugin', array( $this, 'deactivated_plugin' ) );
+		add_action( 'admin_init', array( $this, 'check_environment' ) );
+		add_action( 'admin_init', array( $this, 'add_plugin_notices' ) );
+		add_action( 'admin_notices', array( $this, 'admin_notices' ), 15 );
 
-		add_action( 'plugins_loaded', array( $this, 'on_plugins_loaded' ), -1 );
-		add_action( 'init', array( $this, 'init' ), 0 );
+		// If the environment check fails, initialize the plugin.
+		if ( $this->is_environment_compatible() ) {
+			add_action( 'plugins_loaded', array( $this, 'init_plugin' ) );
+		}
 	}
 
 	/**
-	 * Output a admin notice when build dependencies not met.
+	 * Cloning instances is forbidden due to singleton pattern.
 	 *
-	 * @return void
 	 * @since 1.0.0
 	 */
-	public function build_dependencies_notice() {
-		$old_php = version_compare( phpversion(), WP_BULK_PROCESS_MIN_PHP_VERSION, '<' );
-		$old_wp  = version_compare( get_bloginfo( 'version' ), WP_BULK_PROCESS_MIN_WP_VERSION, '<' );
-
-		// Both PHP and WordPress up to date version => no notice.
-		if ( ! $old_php && ! $old_wp ) {
-			return;
-		}
-
-		if ( $old_php && $old_wp ) {
-			$msg = sprintf(
-				/* translators: 1: Minimum PHP version 2: Recommended PHP version 3: Minimum WordPress version */
-				__( 'Update required: WP Bulk Process require PHP version %1$s or newer (%2$s or higher recommended) and WordPress version %3$s or newer to work properly. Please update to required version to have best experience.', 'wp-bulk-process' ),
-				WP_BULK_PROCESS_MIN_PHP_VERSION,
-				WP_BULK_PROCESS_BEST_PHP_VERSION,
-				WP_BULK_PROCESS_MIN_WP_VERSION
-			);
-		} elseif ( $old_php ) {
-			$msg = sprintf(
-				/* translators: 1: Minimum PHP version 2: Recommended PHP version */
-				__( 'Update required: WP Bulk Process require PHP version %1$s or newer (%2$s or higher recommended) to work properly. Please update to required version to have best experience.', 'wp-bulk-process' ),
-				WP_BULK_PROCESS_MIN_PHP_VERSION,
-				WP_BULK_PROCESS_BEST_PHP_VERSION
-			);
-		} elseif ( $old_wp ) {
-			$msg = sprintf(
-				/* translators: %s: Minimum WordPress version */
-				__( 'Update required: WP Bulk Process require WordPress version %s or newer to work properly. Please update to required version to have best experience.', 'wp-bulk-process' ),
-				WP_BULK_PROCESS_MIN_WP_VERSION
-			);
-		}
-
-		echo '<div class="error"><p>' . $msg . '</p></div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	public function __clone() {
+		_doing_it_wrong( __FUNCTION__, sprintf( 'You cannot clone instances of %s.', esc_html( get_class( $this ) ) ), '1.0.0' );
 	}
 
 	/**
-	 * Install wp_bulk_process
+	 * Unserializing instances is forbidden due to singleton pattern.
 	 *
-	 * @return void
 	 * @since 1.0.0
 	 */
-	public function install() {
+	public function __wakeup() {
+		_doing_it_wrong( __FUNCTION__, sprintf( 'You cannot unserialize instances of %s.', esc_html( get_class( $this ) ) ), '1.0.0' );
 	}
 
 	/**
@@ -140,21 +99,24 @@ final class WP_Bulk_Process {
 				$error_message = sprintf( __( '%1$s in %2$s on line %3$s', 'wp-bulk-process' ), $error['message'], $error['file'], $error['line'] ) . PHP_EOL;
 				// phpcs:disable WordPress.PHP.DevelopmentFunctions
 				error_log( $error_message );
-				// phpcs:enable
+				// phpcs:enable WordPress.PHP.DevelopmentFunctions
 			}
 		}
 	}
 
 	/**
 	 * Define WC Constants.
+	 *
+	 * @since 1.0.0
 	 */
 	private function define_constants() {
+		$plugin_data = get_plugin_data( WP_BULK_PROCESS_PLUGIN_FILE );
 		$this->define( 'WP_BULK_PROCESS_ABSPATH', dirname( WP_BULK_PROCESS_PLUGIN_FILE ) . '/' );
 		$this->define( 'WP_BULK_PROCESS_PLUGIN_BASENAME', plugin_basename( WP_BULK_PROCESS_PLUGIN_FILE ) );
-		$this->define( 'WP_BULK_PROCESS_VERSION', '1.0.0' );
-		$this->define( 'WP_BULK_PROCESS_MIN_PHP_VERSION', '5.3' );
-		$this->define( 'WP_BULK_PROCESS_BEST_PHP_VERSION', '5.6' );
-		$this->define( 'WP_BULK_PROCESS_MIN_WP_VERSION', '4.0' );
+		$this->define( 'WP_BULK_PROCESS_PLUGIN_NAME', $plugin_data['Name'] );
+		$this->define( 'WP_BULK_PROCESS_VERSION', $plugin_data['Version'] );
+		$this->define( 'WP_BULK_PROCESS_MIN_PHP_VERSION', $plugin_data['RequiresPHP'] );
+		$this->define( 'WP_BULK_PROCESS_MIN_WP_VERSION', $plugin_data['RequiresWP'] );
 	}
 
 	/**
@@ -162,6 +124,8 @@ final class WP_Bulk_Process {
 	 *
 	 * @param string      $name  Constant name.
 	 * @param string|bool $value Constant value.
+	 *
+	 * @since 1.0.0
 	 */
 	private function define( $name, $value ) {
 		if ( ! defined( $name ) ) {
@@ -173,6 +137,8 @@ final class WP_Bulk_Process {
 	 * What type of request is this?
 	 *
 	 * @param  string $type admin, ajax, cron or frontend.
+	 *
+	 * @since 1.0.0
 	 * @return bool
 	 */
 	private function is_request( $type ) {
@@ -188,8 +154,188 @@ final class WP_Bulk_Process {
 		}
 	}
 
+
+	/**
+	 * Checks the server environment and other factors and deactivates plugins as necessary.
+	 *
+	 * Based on http://wptavern.com/how-to-prevent-wordpress-plugins-from-activating-on-sites-with-incompatible-hosting-environments
+	 *
+	 * @since 1.0.0
+	 */
+	public function activation_check() {
+		if ( ! $this->is_environment_compatible() ) {
+			$this->deactivate_plugin();
+			wp_die(
+				sprintf(
+					/* translators: %s Plugin Name */
+					esc_html__(
+						'%1$s could not be activated. %2$s',
+						'wp-bulk-process'
+					),
+					esc_html( WP_BULK_PROCESS_PLUGIN_NAME ),
+					esc_html( $this->get_environment_message() )
+				)
+			);
+		}
+	}
+
+	/**
+	 * Checks the environment on loading WordPress, just in case the environment changes after activation.
+	 *
+	 * @since 1.0.0
+	 */
+	public function check_environment() {
+		if ( ! $this->is_environment_compatible() && is_plugin_active( WP_BULK_PROCESS_PLUGIN_BASENAME ) ) {
+			$this->deactivate_plugin();
+			$this->add_admin_notice(
+				'bad_environment',
+				'error',
+				sprintf(
+					/* translators: %s Plugin Name */
+					__( '%s has been deactivated.', 'wp-bulk-process' ),
+					WP_BULK_PROCESS_PLUGIN_NAME
+				) . ' ' . $this->get_environment_message()
+			);
+		}
+	}
+
+
+	/**
+	 * Adds notices for out-of-date WordPress and/or WooCommerce versions.
+	 *
+	 * @since 1.0.0
+	 */
+	public function add_plugin_notices() {
+		if ( ! $this->is_wp_compatible() ) {
+			$this->add_admin_notice(
+				'update_wordpress',
+				'error',
+				sprintf(
+					/* translators: 1: Plugin Name 2: Minimum WP Version 3: Update Url */
+					__( '%1$s requires WordPress version %2$s or higher. Please %3$supdate WordPress &raquo;%4$s', 'wp-bulk-process' ),
+					WP_BULK_PROCESS_PLUGIN_NAME,
+					WP_BULK_PROCESS_MIN_WP_VERSION,
+					'<a href="' . esc_url( admin_url( 'update-core.php' ) ) . '">',
+					'</a>'
+				)
+			);
+		}
+	}
+
+	/**
+	 * Determines if the required plugins are compatible.
+	 *
+	 * @since 1.0.0
+	 * @return bool
+	 */
+	private function plugins_compatible() {
+		return $this->is_wp_compatible();
+	}
+
+
+	/**
+	 * Determines if the WordPress compatible.
+	 *
+	 * @since 1.0.0
+	 * @return bool
+	 */
+	private function is_wp_compatible() {
+		if ( ! WP_BULK_PROCESS_MIN_WP_VERSION ) {
+			return true;
+		}
+		return version_compare( get_bloginfo( 'version' ), WP_BULK_PROCESS_MIN_WP_VERSION, '>=' );
+	}
+
+	/**
+	 * Deactivates the plugin.
+	 *
+	 * @since 1.0.0
+	 */
+	protected function deactivate_plugin() {
+		deactivate_plugins( WP_BULK_PROCESS_PLUGIN_FILE );
+
+		if ( isset( $_GET['activate'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification
+			unset( $_GET['activate'] ); // phpcs:ignore WordPress.Security.NonceVerification
+		}
+	}
+
+	/**
+	 * Adds an admin notice to be displayed.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $slug    The slug for the notice.
+	 * @param string $class   The css class for the notice.
+	 * @param string $message The notice message.
+	 */
+	private function add_admin_notice( $slug, $class, $message ) {
+		$this->notices[ $slug ] = array(
+			'class'   => $class,
+			'message' => $message,
+		);
+	}
+
+	/**
+	 * Displays any admin notices added with WP_Bulk_Process::add_admin_notice()
+	 *
+	 * @since 1.0.0
+	 */
+	public function admin_notices() {
+		foreach ( (array) $this->notices as $notice_key => $notice ) {
+			?>
+			<div class="<?php echo esc_attr( $notice['class'] ); ?>">
+				<p>
+				<?php
+				echo wp_kses(
+					$notice['message'],
+					array(
+						'strong' => array(),
+						'a'      => array(
+							'href'   => array(),
+							'target' => array(),
+						),
+					)
+				);
+				?>
+					</p>
+			</div>
+			<?php
+		}
+	}
+
+
+	/**
+	 * Determines if the server environment is compatible with this plugin.
+	 *
+	 * Override this method to add checks for more than just the PHP version.
+	 *
+	 * @since 1.0.0
+	 * @return bool
+	 */
+	private function is_environment_compatible() {
+		return version_compare( phpversion(), WP_BULK_PROCESS_MIN_PHP_VERSION, '>=' );
+	}
+
+
+	/**
+	 * Gets the message for display when the environment is incompatible with this plugin.
+	 *
+	 * @since 1.0.0
+	 * @return string
+	 */
+	private function get_environment_message() {
+		return sprintf(
+			/* translators: 1: Minimum PHP Version 2: Current PHP Version */
+			__( 'The minimum PHP version required for this plugin is %1$s. You are running %2$s.', 'wp-bulk-process' ),
+			WP_BULK_PROCESS_MIN_PHP_VERSION,
+			phpversion()
+		);
+	}
+
 	/**
 	 * Include required core files used in admin and on the frontend.
+	 *
+	 * @since 1.0.0
 	 */
 	public function includes() {
 		/**
@@ -200,19 +346,6 @@ final class WP_Bulk_Process {
 		}
 	}
 
-	/**
-	 * Init WP_Bulk_Process when WordPress Initialises.
-	 */
-	public function init() {
-		// Before init action.
-		do_action( 'before_wp_bulk_process_init' );
-
-		// Set up localisation.
-		$this->load_plugin_textdomain();
-
-		// Init action.
-		do_action( 'wp_bulk_process_init' );
-	}
 
 	/**
 	 * Load Localisation files.
@@ -222,6 +355,8 @@ final class WP_Bulk_Process {
 	 * Locales found in:
 	 *      - WP_LANG_DIR/wp-bulk-process/wp-bulk-process-LOCALE.mo
 	 *      - WP_LANG_DIR/plugins/wp-bulk-process-LOCALE.mo
+	 *
+	 * @since 1.0.0
 	 */
 	public function load_plugin_textdomain() {
 		if ( function_exists( 'determine_locale' ) ) {
@@ -237,9 +372,34 @@ final class WP_Bulk_Process {
 		load_plugin_textdomain( 'wp-bulk-process', false, plugin_basename( dirname( WP_BULK_PROCESS_PLUGIN_FILE ) ) . '/languages' );
 	}
 
+
+	/**
+	 * Hook into actions and filters.
+	 *
+	 * @since 1.0.0
+	 */
+	public function init_plugin() {
+		if ( ! $this->plugins_compatible() ) {
+			return;
+		}
+
+		// Include required files.
+		$this->includes();
+
+		// Before init action.
+		do_action( 'before_wp_bulk_process_init' );
+
+		// Set up localisation.
+		$this->load_plugin_textdomain();
+
+		// Init action.
+		do_action( 'wp_bulk_process_init' );
+	}
+
 	/**
 	 * Get the plugin url.
 	 *
+	 * @since 1.0.0
 	 * @return string
 	 */
 	public function plugin_url() {
@@ -249,6 +409,7 @@ final class WP_Bulk_Process {
 	/**
 	 * Get the plugin path.
 	 *
+	 * @since 1.0.0
 	 * @return string
 	 */
 	public function plugin_path() {
@@ -258,29 +419,10 @@ final class WP_Bulk_Process {
 	/**
 	 * Get Ajax URL.
 	 *
+	 * @since 1.0.0
 	 * @return string
 	 */
 	public function ajax_url() {
 		return admin_url( 'admin-ajax.php', 'relative' );
-	}
-
-	/**
-	 * Ran when any plugin is activated.
-	 *
-	 * @since 1.0.0
-	 * @param string $filename The filename of the activated plugin.
-	 */
-	public function activated_plugin( $filename ) {
-		// Add you plugin activation code here.
-	}
-
-	/**
-	 * Ran when any plugin is deactivated.
-	 *
-	 * @since 1.0.0
-	 * @param string $filename The filename of the deactivated plugin.
-	 */
-	public function deactivated_plugin( $filename ) {
-		// Add you plugin deactivation code here.
 	}
 }

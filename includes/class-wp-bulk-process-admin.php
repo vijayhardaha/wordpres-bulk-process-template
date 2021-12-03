@@ -282,7 +282,7 @@ class WP_Bulk_Process_Admin {
 		<div class="wp-bulk-process-setting-row wp-bulk-process-clear">
 			<table class="wp-bulk-process-summary-table">
 				<tbody>
-					<?php // phpcs:disable WordPress.Security.ValidatedSanitizedInput ?>
+					<?php // phpcs:disable WordPress.Security.NonceVerification,WordPress.Security.ValidatedSanitizedInput ?>
 					<tr>
 						<td><?php esc_html_e( 'Success', 'wp-bulk-process' ); ?></td>
 						<td><?php echo isset( $_GET['success'] ) && ! empty( $_GET['success'] ) ? esc_html( $_GET['success'] ) : 0; ?></td>
@@ -295,13 +295,12 @@ class WP_Bulk_Process_Admin {
 						<td><?php esc_html_e( 'Skipped', 'wp-bulk-process' ); ?></td>
 						<td><?php echo isset( $_GET['skipped'] ) && ! empty( $_GET['skipped'] ) ? esc_html( $_GET['skipped'] ) : 0; ?></td>
 					</tr>
-					<?php // phpcs:enable WordPress.Security.ValidatedSanitizedInput ?>
+					<?php // phpcs:enable WordPress.Security.NonceVerification,WordPress.Security.ValidatedSanitizedInput ?>
 				</tbody>
 			</table>
 		</div>
 		<?php
 	}
-
 }
 
 return new WP_Bulk_Process_Admin();

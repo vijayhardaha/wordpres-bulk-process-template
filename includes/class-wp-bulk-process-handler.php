@@ -206,7 +206,6 @@ class WP_Bulk_Process_Handler {
 
 		return apply_filters( 'wp_bulk_process_handler_time_exceeded', $return );
 	}
-
 }
 
 return new WP_Bulk_Process_Handler();
