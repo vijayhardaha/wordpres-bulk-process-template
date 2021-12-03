@@ -1,15 +1,17 @@
 <?php
 /**
- * Plugin Name: WP Bulk Process
- * Plugin URI: https://pph.me/vijayhardaha
- * Description: A WordPress custom plugin templates to perform a bulk process with Ajax without worrying about memory exceed or timeout problems.
+ * Plugin Name: WordPress Bulk Process
+ * Plugin URI: https://github.com/vijayhardaha/wordpres-bulk-process-template
+ * Description: A WordPress plugin template to perform a bulk process with Ajax without worrying about memory exceed or timeout problems.
  * Version: 1.0.0
  * Author: Vijay Hardaha
  * Author URI: https://twitter.com/vijayhardaha
- * License: GPL-3.0+
- * License URI: http://www.gnu.org/licenses/gpl-3.0.txt
  * Text Domain: wp-bulk-process
  * Domain Path: /languages/
+ * Requires at least: 5.4
+ * Requires PHP: 5.6
+ * License: GNU General Public License v2 or later
+ * License URI: http://www.gnu.org/licenses/gpl-2.0.html
  *
  * @package WP_Bulk_Process
  */
