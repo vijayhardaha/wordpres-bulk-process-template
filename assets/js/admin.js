@@ -1,5 +1,5 @@
 /* Global wp_bulk_process_params */
-( function( $, window ) {
+( function ( $, window ) {
   if ( typeof wp_bulk_process_params === 'undefined' ) {
     return false;
   }
@@ -12,7 +12,7 @@
   /**
    * bulkHandler handles the process.
    */
-  var bulkHandler = function( $container ) {
+  var bulkHandler = function ( $container ) {
     this.contaniner = $container;
     this.xhr = false;
     this.position = 0;
@@ -40,7 +40,7 @@
   /**
    * Run the update in batches until finished.
    */
-  bulkHandler.prototype.run_process = function() {
+  bulkHandler.prototype.run_process = function () {
     var self = this;
 
     $.ajax( {
@@ -53,7 +53,7 @@
         action_name: self.action
       },
       dataType: 'json',
-      success: function( response ) {
+      success: function ( response ) {
         if ( response.success ) {
           self.position = response.data.position;
           self.updated += response.data.updated;
@@ -67,7 +67,7 @@
           }
         }
       }
-    } ).fail( function( response ) {
+    } ).fail( function ( response ) {
       console.log( response );
     } );
   };
@@ -75,7 +75,7 @@
   /**
    * Function to call bulkHandler on jQuery selector.
    */
-  $.fn.wp_bulk_process_loader = function() {
+  $.fn.wp_bulk_process_loader = function () {
     new bulkHandler( this );
     return this;
   };
