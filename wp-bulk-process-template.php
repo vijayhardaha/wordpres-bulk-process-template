@@ -19,6 +19,10 @@
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit;
 
+if ( ! function_exists( 'get_plugin_data' ) ) {
+	require_once ABSPATH . 'wp-admin/includes/plugin.php';
+}
+
 if ( ! defined( 'WP_BULK_PROCESS_PLUGIN_FILE' ) ) {
 	define( 'WP_BULK_PROCESS_PLUGIN_FILE', __FILE__ );
 }
